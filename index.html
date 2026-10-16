@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma de Aprendizaje NTICx | 4° Año Educación Física</title>
+  <!-- Librería externa para efecto de confeti motivador -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --panel-bg: #ffffff;
+      --primary: #0284c7;
+      --secondary: #16a34a;
+      --accent: #f59e0b;
+      --text-main: #1e293b;
+      --border-color: #cbd5e1;
+      --focus-ring: #000000;
+    }
+
+    /* Estilos para Modo Alto Contraste */
+    body.high-contrast {
+      --bg-color: #000000;
+      --panel-bg: #121212;
+      --primary: #ffff00;
+      --secondary: #00ffff;
+      --accent: #00ff00;
+      --text-main: #ffffff;
+      --border-color: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Verdana', Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* CABECERA PRINCIPAL */
+    header {
+      background: linear-gradient(135deg, #0284c7, #16a34a);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    body.high-contrast header {
+      background: #000000;
+      border-bottom: 4px solid #ffff00;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+
+    /* BARRA DE ACCESIBILIDAD */
+    .accessibility-bar {
+      background: #e2e8f0;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    body.high-contrast .accessibility-bar {
+      background: #262626;
+    }
+
+    .btn-acc {
+      background: white;
+      border: 2px solid var(--text-main);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-acc:focus, .btn-acc:hover {
+      outline: 3px solid var(--focus-ring);
+      background: #f1f5f9;
+    }
+
+    /* ESTRUCTURA PRINCIPAL: MENÚ + CONTENIDO */
+    .app-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* MENÚ LATERAL DE TEMAS */
+    nav.sidebar {
+      width: 320px;
+      background: var(--panel-bg);
+      border-right: 3px solid var(--border-color);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .menu-section-title {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin: 15px 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 4px;
+    }
+
+    .menu-list {
+      list-style: none;
+    }
+
+    .menu-item {
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: var(--bg-color);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* ÁREA DE TRABAJO DERECHA */
+    main.content-area {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    /* SECCIONES Y CONTENEDORES CONCEPTUALES */
+    .concept-card {
+      background: var(--panel-bg);
+      border: 3px solid var(--primary);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .concept-title {
+      font-size: 1.4rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .concept-text {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    /* CUADRO DE CASO PRÁCTICO */
+    .case-box {
+      background-color: #f0f9ff;
+      border-left: 5px solid var(--primary);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .case-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 5px;
+      font-size: 1rem;
+    }
+
+    /* ZONA DE AUTOEVALUACIÓN INTERACTIVA */
+    .quiz-card {
+      background: var(--panel-bg);
+      border: 3px solid var(--secondary);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .quiz-title {
+      font-size: 1.2rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-option {
+      background: var(--bg-color);
+      border: 2px solid var(--border-color);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 1rem;
+      text-align: left;
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .btn-option:hover {
+      border-color: var(--primary);
+      background: #e0f2fe;
+    }
+
+    .feedback-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .feedback-box.correct {
+      background-color: #dcfce7;
+      color: #15803d;
+      border: 2px solid #16a34a;
+      display: block;
+    }
+
+    .feedback-box.incorrect {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 2px solid #ef4444;
+      display: block;
+    }
+
+    /* BOTÓN VOLVER AL INDEX */
+    .btn-back-portal {
+      text-decoration: none;
+      color: white;
+      background: rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    /* RESPONSIVE PARA PANTALLAS PEQUEÑAS */
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+      }
+      nav.sidebar {
+        width: 100%;
+        max-height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA PRINCIPAL -->
+  <header>
+    <h1>🏀 Módulo Interactivo de NTICx</h1>
+    <p>4° Año - Orientación Educación Física | Alfabetización Digital e Informacional (ADI)</p>
+    <a href="index.html" class="btn-back-portal">⬅️ Volver al Portal Principal</a>
+  </header>
+
+  <!-- BARRA DE ACCESIBILIDAD Y APOYOS -->
+  <div class="accessibility-bar">
+    <button class="btn-acc" onclick="toggleContrast()">👁️ Modo Alto Contraste</button>
+    <button class="btn-acc" onclick="speakCurrentTheory()">🔊 Escuchar Explicación</button>
+    <button class="btn-acc" onclick="celebrateAchievement()">🎉 ¡Celebrar Logro!</button>
+  </div>
+
+  <div class="app-container">
+
+    <!-- MENÚ LATERAL DE MÓDULOS NTICx -->
+    <nav class="sidebar">
+      
+      <div class="menu-section-title">💻 1. Informática y Computación</div>
+      <ul class="menu-list">
+        <li class="menu-item active" onclick="loadTopic('m1_conceptos')">1. Conceptos Fundamentales</li>
+        <li class="menu-item" onclick="loadTopic('m1_hw_sw')">2. Hardware y Software</li>
+        <li class="menu-item" onclick="loadTopic('m1_unidades')">3. Unidades de Medida</li>
+      </ul>
+
+      <div class="menu-section-title">🌐 2. Redes Digitales</div>
+      <ul class="menu-list">
+        <li class="menu-item" onclick="loadTopic('m2_tipos_red')">4. Redes (PAN, LAN, WAN)</li>
+        <li class="menu-item" onclick="loadTopic('m2_internet')">5. Internet, Intranet y TCP/IP</li>
+      </ul>
+
+      <div class="menu-section-title">📊 3. Manejo de Información</div>
+      <ul class="menu-list">
+        <li class="menu-item" onclick="loadTopic('m3_busqueda')">6. Búsqueda y Normas APA</li>
+        <li class="menu-item" onclick="loadTopic('m3_planillas')">7. Planillas y Bases de Datos</li>
+      </ul>
+
+      <div class="menu-section-title">🖼️ 4. Imagen Visual</div>
+      <ul class="menu-list">
+        <li class="menu-item" onclick="loadTopic('m4_mapas_vectores')">8. Mapas de Bits vs Vectores</li>
+        <li class="menu-item" onclick="loadTopic('m4_infografia')">9. Infografías Visuales</li>
+      </ul>
+
+      <div class="menu-section-title">🤝 5. Comunicación y Colaboración</div>
+      <ul class="menu-list">
+        <li class="menu-item" onclick="loadTopic('m5_colaboracion')">10. Nube y Trabajo Colaborativo</li>
+      </ul>
+
+      <div class="menu-section-title">🎬 6. Multimedia</div>
+      <ul class="menu-list">
+        <li class="menu-item" onclick="loadTopic('m6_multimedia')">11. Integración Multimedia</li>
+      </ul>
+
+      <div class="menu-section-title">🛡️ 7. Ciudadanía Digital e IA</div>
+      <ul class="menu-list">
+        <li class="menu-item" onclick="loadTopic('m7_seguridad')">12. Huella Digital y Licencias</li>
+        <li class="menu-item" onclick="loadTopic('m7_ia_robotica')">13. IA y Robótica en el Deporte</li>
+      </ul>
+
+    </nav>
+
+    <!-- ÁREA DE TRABAJO PRINCIPAL -->
+    <main class="content-area">
+
+      <!-- TARJETA DE CONCEPTO Y EXPLICACIÓN TEÓRICA -->
+      <section class="concept-card">
+        <h2 class="concept-title" id="topicTitle">Cargando Título...</h2>
+        <div class="concept-text" id="topicDescription">
+          Cargando contenido...
+        </div>
+
+        <!-- CASO PRÁCTICO EN EDUCACIÓN FÍSICA -->
+        <div class="case-box">
+          <div class="case-title">💡 Aplicación Práctica en Educación Física y Deporte:</div>
+          <div id="topicCase">Cargando ejemplo práctico...</div>
+        </div>
+      </section>
+
+      <!-- AUTOEVALUACIÓN INTERACTIVA -->
+      <section class="quiz-card">
+        <div class="quiz-title">🧠 Comprueba lo que aprendiste:</div>
+        <p id="quizQuestion" style="font-size: 1.05rem; font-weight: bold;">Cargando pregunta...</p>
+        
+        <div class="options-grid" id="quizOptions">
+          <!-- Las opciones se generan dinámicamente con JS -->
+        </div>
+
+        <div id="quizFeedback" class="feedback-box"></div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+    /* BASE DE DATOS CONTENIDOS CONCEPTUALES DE NTICx - 4° AÑO EDUCACIÓN FÍSICA */
+    const topics = {
+      'm1_conceptos': {
+        title: 'Conceptos de Técnica, Tecnología, Datos e Información',
+        desc: '<p><b>Técnica:</b> Es el conjunto de procedimientos o habilidades prácticas (ej. la técnica de tiro en básquet).<br><b>Tecnología:</b> Es la aplicación ordenada del conocimiento científico para crear herramientas o resolver problemas.<br><b>Dato:</b> Es una unidad mínima de información sin procesar (un número o palabra suelta).<br><b>Información:</b> Es un conjunto de datos procesados y organizados dentro de un contexto con significado.</p>',
+        case: 'Durante un entrenamiento, la cinta mide "165". Eso es solo un <b>dato</b>. Cuando el profesor analiza que son "165 pulsaciones por minuto en la Zona Aeróbica de Sofía", eso se convierte en <b>información</b> clave para ajustar la intensidad de la carga física.',
+        question: 'Si un sensor marca el valor aislado "12.5", ¿de qué tipo de elemento estamos hablando?',
+        options: [
+          { text: 'A) Es un dato no procesado', correct: true },
+          { text: 'B) Es una información estructurada', correct: false },
+          { text: 'C) Es un sistema informático', correct: false }
+        ],
+        explanation: '¡Correcto! Un número o medición por sí sola sin contexto es un dato. Al agregarle unidad y significado (ej: "12.5 segundos en 100m lisos") pasa a ser información.'
+      },
+      'm1_hw_sw': {
+        title: 'Hardware y Clasificación de Software',
+        desc: '<p><b>Hardware:</b> Es todo el equipamiento físico y tangible del sistema computacional.<br><b>Software:</b> Son los programas, sistemas operativos y aplicaciones invisibles (lógicas) que le indican al hardware qué hacer.<br><b>Clasificación de Software:</b> Software de Sistema (Sistemas Operativos como Android o Windows) y Software de Aplicación (apps deportivas, planillas, etc.).</p>',
+        case: 'Un reloj GPS Garmin o una banda pectoral para medir frecuencia cardíaca corresponden al <b>Hardware</b>. La aplicación móvil (como Strava o Garmin Connect) que sincroniza esos datos e interpreta la ruta es el <b>Software de Aplicación</b>.',
+        question: '¿A qué categoría pertenece la aplicación "Kinovea" utilizada para analizar la técnica de salto?',
+        options: [
+          { text: 'A) Hardware de entrada', correct: false },
+          { text: 'B) Software de Aplicación', correct: true },
+          { text: 'C) Software de Sistema Operativo', correct: false }
+        ],
+        explanation: '¡Excelente! Kinovea es un Software de Aplicación diseñado para cumplir una tarea específica: el análisis de movimiento y video deportivo.'
+      },
+      'm1_unidades': {
+        title: 'Unidades de Medida de Información (Bit, Byte, Mapeo)',
+        desc: '<p><b>Bit (Binary Digit):</b> Es la unidad mínima de información en computación (toma valores de 0 o 1).<br><b>Byte:</b> Es un conjunto de 8 bits seguidos.<br><b>Escala de Medida:</b> Kilobyte (KB) ➡️ Megabyte (MB) ➡️ Gigabyte (GB) ➡️ Terabyte (TB). Cada nivel multiplica por 1024 la capacidad del anterior.</p>',
+        case: 'Grabar un partido completo de fútbol en alta definición (HD) para analizar la táctica del equipo puede pesar 4 <b>Gigabytes (GB)</b>, mientras que una simple tabla de planillas con las marcas de atletismo ocupa unos pocos <b>Kilobytes (KB)</b>.',
+        question: '¿Cuántos Bits componen exactamente a 1 Byte?',
+        options: [
+          { text: 'A) 1024 bits', correct: false },
+          { text: 'B) 8 bits', correct: true },
+          { text: 'C) 100 bits', correct: false }
+        ],
+        explanation: '¡Muy bien! Un Byte está formado por la combinación de 8 bits individuales.'
+      },
+      'm2_tipos_red': {
+        title: 'Redes Informáticas según su Alcance (PAN, LAN, MAN, WAN)',
+        desc: '<p>Las redes se clasifican según el área geográfica que cubren:<br>• <b>PAN (Personal Area Network):</b> Red de área personal (pocos metros, ej: Bluetooth).<br>• <b>LAN (Local Area Network):</b> Red de área local (un gimnasio, club o escuela).<br>• <b>MAN (Metropolitan Area Network):</b> Red que abarca una ciudad.<br>• <b>WAN (Wide Area Network):</b> Red mundial o global (Internet).</p>',
+        case: 'Cuando vinculas de forma inalámbrica un sensor de cadencia ubicado en los pedales de la bicicleta con tu reloj inteligente mientras pedaleas, estás creando una red de alcance personal (<b>PAN</b>).',
+        question: '¿Qué tipo de red interconecta las computadoras y cámaras conectadas dentro de la sede de un club deportivo?',
+        options: [
+          { text: 'A) Red PAN', correct: false },
+          { text: 'B) Red LAN', correct: true },
+          { text: 'C) Red WAN', correct: false }
+        ],
+        explanation: '¡Correcto! Al ser un espacio delimitado físicamente como un club o edificio escolar, se trata de una red de área local (LAN).'
+      },
+      'm2_internet': {
+        title: 'Organización de Redes: Internet, Intranet, Extranet y TCP/IP',
+        desc: '<p><b>Internet:</b> Red pública global de computadoras interconectadas.<br><b>Intranet:</b> Red privada restringida exclusivamente a los miembros de una organización.<br><b>Extranet:</b> Red privada que permite acceso autorizado a usuarios externos (ej: socios o proveedores).<br><b>TCP/IP:</b> Conjunto de reglas y protocolos que garantizan que los datos viajen sin errores en la red.</p>',
+        case: 'La Confederación de Deportes usa una <b>Intranet</b> privada para que los árbitros carguen las actas confidenciales. Al mismo tiempo, publica los resultados finales en <b>Internet</b> para que todo el público acceda.',
+        question: '¿Cuál es la función del conjunto de protocolos TCP/IP?',
+        options: [
+          { text: 'A) Fabricar el hardware de las computadoras', correct: false },
+          { text: 'B) Establecer las reglas para que la información viaje correctamente por la red', correct: true },
+          { text: 'C) Diseñar gráficos vectoriales para deportes', correct: false }
+        ],
+        explanation: '¡Así es! TCP/IP es el "idioma universal" y conjunto de normas que permite la comunicación global en la red.'
+      },
+      'm3_busqueda': {
+        title: 'Manejo de Información, Evaluación de Fuentes y Citación APA',
+        desc: '<p><b>Evaluación de Fuentes:</b> No toda la información en la web es verídica. Se debe verificar: Autoría, Criterio Científico, Actualidad y Objetividad.<br><b>Normas APA:</b> Formato estandarizado internacional para citar autores y dar crédito bibliográfico a las investigaciones científicas utilizadas.</p>',
+        case: 'Si preparas un trabajo sobre "Prevención de Lesiones en la Adolescencia", debes recurrir a revistas médicas o portales universitarios antes que a un foro sin autor reconocido, y citar con <b>Normas APA</b> para evitar el plagio.',
+        question: '¿Por qué es importante citar las fuentes de información utilizando normas como APA en un proyecto escolar?',
+        options: [
+          { text: 'A) Para darle validez académica y respetar los derechos de autor', correct: true },
+          { text: 'B) Para reducir el tamaño del archivo en disco', correct: false },
+          { text: 'C) Para acelerar la velocidad de la conexión de Internet', correct: false }
+        ],
+        explanation: '¡Correcto! Citar adecuadamente reconoce el trabajo de los investigadores y fundamenta académicamente tu trabajo.'
+      },
+      'm3_planillas': {
+        title: 'Procesadores de Texto, Planillas de Cálculo y Bases de Datos',
+        desc: '<p><b>Planillas de Cálculo (Excel/Sheets):</b> Herramientas para procesar datos numéricos mediante fórmulas, funciones matemáticas (promedios, sumas) y gráficos estadísticos.<br><b>Bases de Datos:</b> Estructuras organizadas para almacenar volúmenes grandes de registros interrelacionados.</p>',
+        case: 'Un profesor de Educación Física utiliza una <b>planilla de cálculo</b> para ingresar las marcas del test de Cooper de 30 alumnos y calcular automáticamente el promedio del curso y el VO2 Máximo mediante fórmulas.',
+        question: '¿Cuál es la herramienta digital más adecuada para calcular el promedio de tiempos de una competencia y generar un gráfico?',
+        options: [
+          { text: 'A) Un procesador de texto', correct: false },
+          { text: 'B) Una planilla de cálculo', correct: true },
+          { text: 'C) Un editor de imágenes de mapas de bits', correct: false }
+        ],
+        explanation: '¡Perfecto! Las planillas de cálculo destacan por su capacidad de automatizar cálculos matemáticos y graficar estadísticas.'
+      },
+      'm4_mapas_vectores': {
+        title: 'Tratamiento de la Imagen Digital: Mapas de Bits vs. Vectores',
+        desc: '<p><b>Mapa de Bits (Raster):</b> Imágenes compuestas por una rejilla de píxeles (JPG, PNG). Si se amplían demasiado, se "pixelan" y pierden nitidez.<br><b>Vectoriales:</b> Imágenes construidas con fórmulas matemáticas (SVG, AI). Se pueden agrandar a cualquier tamaño (como en un pasacalles o camiseta) sin perder calidad.</p>',
+        case: 'El logo o escudo del club deportivo debe estar diseñado en formato <b>vectorial</b> para poder imprimirse gigante en una gigantografía sin deformarse. En cambio, las fotos de las jugadas son <b>mapas de bits</b>.',
+        question: '¿Qué ocurre con una imagen en formato Mapa de Bits cuando se amplía exageradamente?',
+        options: [
+          { text: 'A) Mantiene una resolución perfecta sin distorsión', correct: false },
+          { text: 'B) Se aprecian los píxeles (se pixela) y pierde nitidez', correct: true },
+          { text: 'C) Se transforma automáticamente en un video', correct: false }
+        ],
+        explanation: '¡Exacto! Al estar compuesta por cuadraditos de color (píxeles), la imagen pierde definición al agrandarse.'
+      },
+      'm4_infografia': {
+        title: 'Diseño Básico y Creación de Infografías',
+        desc: '<p><b>Infografía:</b> Es una combinación visual de imágenes sintéticas, esquemas y textos breves diseñada para comunicar información compleja de manera rápida, clara y atrayente.</p>',
+        case: 'Para enseñar las "Reglas Básicas del Handball" o la "Pirámide Nutricional del Deportista", una <b>infografía</b> colgada en la entrada del gimnasio resulta mucho más efectiva que un texto largo de varias páginas.',
+        question: '¿Cuál es la característica principal de una infografía bien diseñada?',
+        options: [
+          { text: 'A) Contener bloques extensos de texto sin imágenes', correct: false },
+          { text: 'B) Combinar lenguaje visual y textos breves para facilitar la comprensión rápida', correct: true },
+          { text: 'C) Funcionar únicamente cuando no hay conexión a red', correct: false }
+        ],
+        explanation: '¡Excelente! La clave de la infografía es resumir la información aprovechando el impacto del diseño gráfico visual.'
+      },
+      'm5_colaboracion': {
+        title: 'Medios Digitales de Comunicación, Nube y Colaboración',
+        desc: '<p><b>Trabajo Colaborativo:</b> Herramientas en línea que permiten a múltiples usuarios editar el mismo documento de manera simultánea desde distintos lugares.<br><b>Servicios en la Nube:</b> Servidores remotos que almacenan archivos sin depender del disco físico local (Google Drive, OneDrive).</p>',
+        case: 'El equipo de preparadores físicos y el kinesiólogo editan en tiempo real desde sus celulares una carpeta compartida en la <b>nube</b> con el estado de rehabilitación de los deportistas lesionados.',
+        question: '¿Qué ventaja principal ofrece trabajar con un documento alojado en la nube en lugar de guardarlo solo en un pendrive?',
+        options: [
+          { text: 'A) Permite el acceso, respaldo y edición simultánea por varias personas desde cualquier dispositivo conectado', correct: true },
+          { text: 'B) Impide que otras personas puedan ver o editar el trabajo', correct: false },
+          { text: 'C) Elimina la necesidad de utilizar un navegador o Internet', correct: false }
+        ],
+        explanation: '¡Así es! La nube fomenta la disponibilidad continua de archivos y el trabajo en equipo a distancia.'
+      },
+      'm6_multimedia': {
+        title: 'Integración Multimedia e Hipermedia en el Deporte',
+        desc: '<p><b>Multimedia:</b> Integración articulada de texto, imágenes, audio y video en un mismo soporte digital.<br><b>Hipermedia:</b> Es la estructura interactiva que permite navegar sin un orden lineal utilizando enlaces, botones y nodos interactivos.</p>',
+        case: 'Un video interactivo sobre "Técnicas de Reanimación Cardiopulmonar (RCP) en el Deporte" que incluye explicaciones en audio, esquemas interactivos y botones para saltar de módulo es un recurso <b>hipermediatizado</b>.',
+        question: '¿Qué elemento transforma una presentación multimedia tradicional en una experiencia "Hipermedia"?',
+        options: [
+          { text: 'A) El uso exclusivo de textos impresos en papel', correct: false },
+          { text: 'B) La presencia de enlaces y botones que permiten al usuario elegir su propio recorrido interactivo', correct: true },
+          { text: 'C) El uso de un monitor de alto contraste', correct: false }
+        ],
+        explanation: '¡Respuesta correcta! La hipermediatividad añade la interactividad y la navegación no lineal a los contenidos audiovisuales.'
+      },
+      'm7_seguridad': {
+        title: 'Ciudadanía Digital, Huella Digital y Licencias (Creative Commons)',
+        desc: '<p><b>Huella Digital:</b> El rastro o registro que dejamos en Internet al publicar, comentar o navegar.<br><b>Derechos de Autor (Copyright):</b> Protección legal estricta sobre obras originales.<br><b>Creative Commons (CC):</b> Licencias flexibles que permiten compartir obras culturales/educativas indicando las condiciones permitidas.</p>',
+        case: 'Si utilizas una canción o imagen descargada de la web para el video de presentación del equipo escolar, debes verificar que tenga licencia <b>Creative Commons</b> para no infringir derechos de autor ni sufrir bloqueos por Copyright.',
+        question: '¿Qué es la "Huella Digital" en el contexto de la Ciudadanía Digital?',
+        options: [
+          { text: 'A) El sensor con el que se desbloquea el teléfono móvil', correct: false },
+          { text: 'B) La marca o rastro de datos que dejamos registrados al realizar actividades en Internet', correct: true },
+          { text: 'C) La velocidad de descarga medida en Megabits por segundo', correct: false }
+        ],
+        explanation: '¡Muy bien! Nuestra actividad digital pública conforma una huella permanente que debemos gestionar con responsabilidad ética.'
+      },
+      'm7_ia_robotica': {
+        title: 'Inteligencia Artificial, Robótica y Gobierno Electrónico',
+        desc: '<p><b>Inteligencia Artificial (IA):</b> Sistemas capaces de procesar volúmenes masivos de datos para identificar patrones y realizar predicciones.<br><b>Robótica:</b> Dispositivos electromecánicos automatizados para asistencia.<br><b>Gobierno Electrónico:</b> Digitalización de trámites y certificados oficiales de forma segura.</p>',
+        case: 'En el deporte profesional, la <b>Inteligencia Artificial</b> analiza los patrones de movimientos de los jugadores rivales mediante videoanálisis masivo para predecir tácticas de juego y reducir el riesgo de fatiga física.',
+        question: '¿Cuál de las siguientes es una aplicación directa de la Inteligencia Artificial analítica en el deporte actual?',
+        options: [
+          { text: 'A) Predecir zonas de fatiga y prevenir lesiones procesando datos biométricos masivos', correct: true },
+          { text: 'B) Reemplazar por completo el trabajo físico de los atletas en la cancha', correct: false },
+          { text: 'C) Convertir imágenes de mapa de bits en texto plano', correct: false }
+        ],
+        explanation: '¡Correcto! La IA analiza patrones complejos de datos físicos para optimizar el rendimiento y resguardar la salud del deportista.'
+      }
+    };
+
+    let currentTopicKey = 'm1_conceptos';
+
+    /* CARGAR CONTENIDO Y PREGUNTA DEL TEMA */
+    function loadTopic(key) {
+      currentTopicKey = key;
+      const topic = topics[key];
+
+      // Actualizar teoría y caso práctico
+      document.getElementById('topicTitle').textContent = topic.title;
+      document.getElementById('topicDescription').innerHTML = topic.desc;
+      document.getElementById('topicCase').innerHTML = topic.case;
+
+      // Actualizar Pregunta y Opciones del Quiz
+      document.getElementById('quizQuestion').textContent = topic.question;
+      
+      const optionsContainer = document.getElementById('quizOptions');
+      optionsContainer.innerHTML = ''; // Limpiar opciones anteriores
+
+      const feedbackBox = document.getElementById('quizFeedback');
+      feedbackBox.className = 'feedback-box';
+      feedbackBox.style.display = 'none';
+
+      topic.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-option';
+        btn.textContent = opt.text;
+        btn.onclick = () => checkAnswer(opt.correct, topic.explanation);
+        optionsContainer.appendChild(btn);
+      });
+
+      // Actualizar menú seleccionado
+      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+      const activeItem = Array.from(document.querySelectorAll('.menu-item')).find(el => el.getAttribute('onclick').includes(`'${key}'`));
+      if(activeItem) activeItem.classList.add('active');
+    }
+
+    /* EVALUAR RESPUESTA DEL ALUMNO */
+    function checkAnswer(isCorrect, explanation) {
+      const feedbackBox = document.getElementById('quizFeedback');
+      if (isCorrect) {
+        feedbackBox.textContent = explanation;
+        feedbackBox.className = 'feedback-box correct';
+        celebrateAchievement();
+      } else {
+        feedbackBox.textContent = '❌ Respuesta incorrecta. Vuelve a repasar la explicación superior e inténtalo nuevamente.';
+        feedbackBox.className = 'feedback-box incorrect';
+      }
+    }
+
+    /* ACCESIBILIDAD: SÍNTESIS DE VOZ EN ESPAÑOL */
+    function speakCurrentTheory() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const textToRead = document.getElementById('topicTitle').textContent + ". " + document.getElementById('topicDescription').textContent.replace(/<[^>]*>?/gm, '');
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("La síntesis de voz no está soportada en este navegador.");
+      }
+    }
+
+    /* ACCESIBILIDAD: ALTO CONTRASTE */
+    function toggleContrast() {
+      document.body.classList.toggle('high-contrast');
+    }
+
+    /* FUNCIONALIDAD MOTIVADORA: CONFETI */
+    function celebrateAchievement() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+
+    // Cargar primer tema al iniciar la app
+    window.onload = function() {
+      loadTopic('m1_conceptos');
+    };
+  </script>
+</body>
+</html>
